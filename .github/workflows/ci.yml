@@ -17,3 +17,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Run backend tests
+        working-directory: ./backend
+        env:
+          MEDIA_ROOT: src/test/resources/media
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          STREAM_TOKEN_SECRET: ${{ secrets.STREAM_TOKEN_SECRET }}
+          JWT_EXPIRATION: ${{ vars.JWT_EXPIRATION }}
+          STREAM_TOKEN_EXPIRATION: ${{ vars.STREAM_TOKEN_EXPIRATION }}
+        run: ./mvnw test

@@ -13,6 +13,7 @@ A full-stack video streaming application built with Spring Boot and React. Authe
 - RESTful backend API
 - PostgreSQL database with Flyway migrations
 - Unit and integration testing
+- Docker Compose development environment
 
 
 ## Screenshots
@@ -31,6 +32,8 @@ A full-stack video streaming application built with Spring Boot and React. Authe
 **Frontend**
 - React
 - TypeScript
+- Vite
+- Nginx
 
 **Backend**
 - Java
@@ -41,42 +44,55 @@ A full-stack video streaming application built with Spring Boot and React. Authe
 - Flyway
 - JUnit
 
+**Infrastructure**
+- Docker
+
 ## Architecture
 
-The backend follows a layered architecture:
+The application consists of three containerized services:
+- Frontend:5173 maps to Nginx + React
+- Backend:8080 maps to Spring Boot
+- PostgreSQL:5432
 
-`Controller → Service → Repository → PostgreSQL`
-
-The frontend communicates with the backend through a REST API.
+The backend follows a controller, service, repository architecture. The frontend communicates with the backend through a REST API. Video and poster files are stored outside the containers and mounted into the backend container as persistent media storage. PostgreSQL data is persisted in a named volume.
 
 ## Running Locally
 
-### Backend
+### Pre-requisites
 
-Set the following environment variables before starting the backend:
+Project root requires a .env file with the following environmental variables:
 
-- `MEDIA_ROOT` — Directory containing video and poster files (must contain a /movies/posters/ directory)
-- `DB_URL` — PostgreSQL database URL
-- `DB_USERNAME` — PostgreSQL username
-- `DB_PASSWORD` — PostgreSQL password
-- `JWT_SECRET` — Base64-encoded secret used to sign JWTs
-- `JWT_EXPIRATION` — Authentication JWT lifetime in milliseconds
-- `STREAM_TOKEN_SECRET` — Base64-encoded secret used to sign stream URL tokens
-- `STREAM_TOKEN_EXPIRATION` — Stream token lifetime in milliseconds
+MEDIA_ROOT=/media_files
+
+DB_NAME=video_streaming_db
+
+DB_URL=jdbc:postgresql://postgres:5432/video_streaming_db 
+
+DB_USERNAME=postgres 
+
+DB_PASSWORD=<your-password> 
+
+JWT_SECRET=<your-base64-secret> 
+
+JWT_EXPIRATION=86400000 
+
+STREAM_TOKEN_SECRET=<your-base64-secret> 
+
+STREAM_TOKEN_EXPIRATION=21600000 
+
+VITE_API_BASE_URL=```http://localhost:8080```
+
+Host machine requires a C:\media_files\movies\posters directory path to properly store and access video and poster files.
+
+### Starting the Application
 
 ```bash
-cd backend
-./mvnw spring-boot:run
+docker compose up --build
 ```
-Backend runs on http://localhost:8080.
 
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Frontend runs on http://localhost:5173.
+The application is then available at:
+- Frontend: ```http://localhost:5173```
+- Backend API: ```http://localhost:8080```
 
 ## Test Media
 Videos used for development and testing were sourced from [Pexels](https://www.pexels.com/). The video files are not included in this repository.

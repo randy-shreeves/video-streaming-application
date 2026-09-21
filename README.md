@@ -1,20 +1,10 @@
-# Video Streaming
+# Video Streaming Application
 
-A full-stack video streaming application built with Spring Boot and React. Authenticated users can browse a movie catalog, view movie details, and stream video content directly from the browser. Administrators can manage the movie catalog through a protected admin interface.
+A full-stack video streaming application that permits authenticated users to browse and stream video content in their browser.
 
 ## Features
 
-- Browse movie catalog and view movie details
-- Stream MP4 video through the browser
-- JWT-based authentication
-- Role-based authorization for administrative operations
-- Protected access to media resources
-- Admin interface for creating, editing, uploading, and deleting movies
-- RESTful backend API
-- PostgreSQL database with Flyway migrations
-- Unit and integration testing
-- Docker Compose development environment
-
+Users may register a new account and, once logged in, browse a movie catalog, view specific movie details, and stream a movie/video in their browser. Administrators have access to a media management page where they can upload, edit, or delete movies/videos, as well as publish or unpublish them to/from the movie catalog for regular users to view. The application utilizes byte range requests to ensure fast load times and video seeking.
 
 ## Screenshots
 
@@ -27,34 +17,14 @@ A full-stack video streaming application built with Spring Boot and React. Authe
 ### Administrator Controls
 ![Video Player](screenshots/admin-page.png)
 
-## Tech Stack
+## Built With
 
-**Frontend**
 - React
 - TypeScript
-- Vite
-- Nginx
-
-**Backend**
 - Java
 - Spring Boot
-- Spring Data JPA / Hibernate
-- Spring Security
 - PostgreSQL
-- Flyway
-- JUnit
-
-**Infrastructure**
 - Docker
-
-## Architecture
-
-The application consists of three containerized services:
-- Frontend:5173 maps to Nginx + React
-- Backend:8080 maps to Spring Boot
-- PostgreSQL:5432
-
-The backend follows a controller, service, repository architecture. The frontend communicates with the backend through a REST API. Video and poster files are stored outside the containers and mounted into the backend container as persistent media storage. PostgreSQL data is persisted in a named volume.
 
 ## Running Locally
 

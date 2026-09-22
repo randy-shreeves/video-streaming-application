@@ -1,5 +1,7 @@
 package com.randyshreeves.videostreaming.user;
 
+import com.randyshreeves.videostreaming.auth.dto.NewUserRegistrationRequest;
+import com.randyshreeves.videostreaming.exception.UsernameAlreadyExistsException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +21,20 @@ public class UserRepositoryIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     @Test
     void shouldSaveUserSuccessfully() {
-        User user = new User("testuser", "hashedpassword", Role.ROLE_USER);
-        User savedUser = userRepository.save(user);
-        assertNotNull(savedUser.getId());
+        NewUserRegistrationRequest newUserRegistrationRequest = new NewUserRegistrationRequest("testuser", "hashedpassword");
+        userService.registerUser(newUserRegistrationRequest);
+        assertNotNull(userRepository.findByUsername("testUser"));
     }
 
     @Test
     void shouldFindByUsername() {
-        User user = new User("testuser", "hashedpassword", Role.ROLE_USER);
-        userRepository.save(user);
+        NewUserRegistrationRequest newUserRegistrationRequest = new NewUserRegistrationRequest("testuser", "hashedpassword");
+        userService.registerUser(newUserRegistrationRequest);
         Optional<User> foundUser = userRepository.findByUsername("testuser");
         assertTrue(foundUser.isPresent());
         assertEquals("testuser", foundUser.get().getUsername());
@@ -37,21 +42,22 @@ public class UserRepositoryIntegrationTest {
 
     @Test
     void shouldNotAllowDuplicateUsername() {
-        User firstUser = new User("duplicate", "password", Role.ROLE_USER);
-        User secondUser = new User("duplicate", "differentpassword", Role.ROLE_USER);
-        userRepository.save(firstUser);
-        assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(secondUser));
+        NewUserRegistrationRequest newUserRegistrationRequest = new NewUserRegistrationRequest("testuser", "hashedpassword");
+        userService.registerUser(newUserRegistrationRequest);
+        NewUserRegistrationRequest newUserRegistrationRequestWithDuplicateUsername = new NewUserRegistrationRequest("testuser", "hashedpassword");
+        assertThrows(UsernameAlreadyExistsException.class, () -> userService.registerUser(newUserRegistrationRequestWithDuplicateUsername));
     }
 
     @Test
     void shouldNotSaveUserWithoutUsername() {
         User user = new User(null, "hashedpassword", Role.ROLE_USER);
-        assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(user));
+        assertThrows(DataIntegrityViolationException.class, () -> userRepository.save(user));
     }
 
     @Test
     void shouldNotSaveUserWithoutPassword() {
         User user = new User("testUser", null, Role.ROLE_USER);
-        assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(user));
+        assertThrows(DataIntegrityViolationException.class, () -> userRepository.save(user));
     }
+
 }

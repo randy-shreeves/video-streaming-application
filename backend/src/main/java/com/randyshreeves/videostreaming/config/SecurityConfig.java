@@ -38,45 +38,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(streamTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/movies").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/movies/*/details").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/movies/*/poster").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/movies/*/stream").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/movies/*/stream-token").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/watchlist").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/watchlist/*").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/watchlist/*").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/movies/*/poster").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/movies/*/video").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/movies/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/movies/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/movies/admin").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/movies/admin/*/details").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/movies/admin/*/poster").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(
-                                (request, response, authException) -> {
-                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                                    response.flushBuffer();
-                                })
-                        .accessDeniedHandler(
-                                (request, response, accessDeniedException) -> {
-                                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                                        response.flushBuffer();
-                        })
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(streamTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/*").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/movies").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/movies/*/details").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/movies/*/poster").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/movies/*/stream").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/movies/*/stream-token").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/watchlist").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/watchlist/*").authenticated()
+                    .requestMatchers(HttpMethod.DELETE, "/watchlist/*").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/movies/*/poster").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/movies/*/video").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/movies/*").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/movies/*").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/movies/admin").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/movies/admin/*/details").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/movies/admin/*/poster").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint(
+                            (request, response, authException) -> {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    })
+                    .accessDeniedHandler(
+                            (request, response, accessDeniedException) -> {
+                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    })
+            )
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
         return http.build();
     }
 

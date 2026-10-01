@@ -55,12 +55,6 @@ public class MovieService {
         return moviePage.map(this::toMovieResponse);
     }
 
-    public MovieResponse createMovie(MovieRequest movieRequest) {
-        Movie movie = toMovie(movieRequest);
-        Movie savedMovie = movieRepository.save(movie);
-        return toMovieResponse(savedMovie);
-    }
-
     public Page<MovieResponse> getAllMovies(String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<Movie> moviePage;
@@ -72,16 +66,16 @@ public class MovieService {
         return moviePage.map(this::toMovieResponse);
     }
 
-    public MovieResponse getMovie(Long id) {
-        Movie movie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
-        return toMovieResponse(movie);
-    }
-
     public MovieResponse getPublishedMovie(Long id) {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
         if (!movie.isPublished()) {
             throw new MovieNotFoundException(id);
         }
+        return toMovieResponse(movie);
+    }
+
+    public MovieResponse getMovie(Long id) {
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
         return toMovieResponse(movie);
     }
 
@@ -127,6 +121,12 @@ public class MovieService {
             throw new MediaFileNotFoundException("Movie poster not found.");
         }
         return resource;
+    }
+
+    public MovieResponse createMovie(MovieRequest movieRequest) {
+        Movie movie = toMovie(movieRequest);
+        Movie savedMovie = movieRepository.save(movie);
+        return toMovieResponse(savedMovie);
     }
 
     public void uploadVideo(Long id, MultipartFile video) {
@@ -187,16 +187,6 @@ public class MovieService {
         }
     }
 
-    public MovieResponse updateMovie(Long id, MovieRequest movieRequest) {
-        Movie existingMovie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
-        existingMovie.setTitle(movieRequest.getTitle());
-        existingMovie.setDescription(movieRequest.getDescription());
-        existingMovie.setReleaseYear(movieRequest.getReleaseYear());
-        existingMovie.setRuntimeMinutes(movieRequest.getRuntimeMinutes());
-        Movie savedMovie = movieRepository.save(existingMovie);
-        return toMovieResponse(savedMovie);
-    }
-
     public MovieResponse publishMovie(Long id) {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
         if (movie.getStorageLocation() == null || movie.getPosterLocation() == null) {
@@ -211,6 +201,16 @@ public class MovieService {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
         movie.setPublished(false);
         Movie savedMovie = movieRepository.save(movie);
+        return toMovieResponse(savedMovie);
+    }
+
+    public MovieResponse updateMovie(Long id, MovieRequest movieRequest) {
+        Movie existingMovie = movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException(id));
+        existingMovie.setTitle(movieRequest.getTitle());
+        existingMovie.setDescription(movieRequest.getDescription());
+        existingMovie.setReleaseYear(movieRequest.getReleaseYear());
+        existingMovie.setRuntimeMinutes(movieRequest.getRuntimeMinutes());
+        Movie savedMovie = movieRepository.save(existingMovie);
         return toMovieResponse(savedMovie);
     }
 

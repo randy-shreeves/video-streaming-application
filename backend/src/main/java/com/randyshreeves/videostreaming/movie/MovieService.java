@@ -32,19 +32,16 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final StreamTokenService streamTokenService;
-
-    @Value("${media.root}")
     private String mediaRoot;
 
-    public MovieService(MovieRepository movieRepository, StreamTokenService streamTokenService) {
+    public MovieService(
+            MovieRepository movieRepository,
+            StreamTokenService streamTokenService,
+            @Value("${media.root}") String mediaRoot
+    ) {
         this.movieRepository = movieRepository;
         this.streamTokenService = streamTokenService;
-    }
-
-    public MovieResponse createMovie(MovieRequest movieRequest) {
-        Movie movie = toMovie(movieRequest);
-        Movie savedMovie = movieRepository.save(movie);
-        return toMovieResponse(savedMovie);
+        this.mediaRoot = mediaRoot;
     }
 
     public Page<MovieResponse> getAllPublishedMovies(String search, int page, int size) {
@@ -56,6 +53,12 @@ public class MovieService {
             moviePage = movieRepository.findByPublishedTrueAndTitleContainingIgnoreCase(search, pageable);
         }
         return moviePage.map(this::toMovieResponse);
+    }
+
+    public MovieResponse createMovie(MovieRequest movieRequest) {
+        Movie movie = toMovie(movieRequest);
+        Movie savedMovie = movieRepository.save(movie);
+        return toMovieResponse(savedMovie);
     }
 
     public Page<MovieResponse> getAllMovies(String search, int page, int size) {

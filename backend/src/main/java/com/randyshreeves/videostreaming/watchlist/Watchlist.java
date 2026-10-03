@@ -19,6 +19,13 @@ public class Watchlist {
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
+    public Watchlist(){}
+
+    public Watchlist(User user, Movie movie) {
+        this.user = user;
+        this.movie = movie;
+    }
+
     public Long getId() {
         return id;
     }

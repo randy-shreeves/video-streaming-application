@@ -46,9 +46,7 @@ public class WatchlistService {
             throw new MovieAlreadyInWatchlistException("Movie is already in watchlist.");
         }
 
-        Watchlist watchlist = new Watchlist();
-        watchlist.setUser(user);
-        watchlist.setMovie(movie);
+        Watchlist watchlist = new Watchlist(user, movie);
         watchlistRepository.save(watchlist);
     }
 
